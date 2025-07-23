@@ -1,0 +1,89 @@
+CREATE TYPE style_enum  AS ENUM ('无','衬衫','T恤','连衣裙','裤子','裙子','外套','毛衣');
+CREATE TYPE color_enum  AS ENUM ('无','红色','蓝色','白色','黑色','灰色','绿色','黄色','紫色','粉色','棕色');
+CREATE TYPE tone_enum   AS ENUM ('无','浅色调','深色调','中性色调','亮色调');
+CREATE TYPE collar_enum AS ENUM ('无','圆领','V领','高领','翻领','立领','一字领','方领','心形领');
+CREATE TYPE sleeve_enum AS ENUM ('无','长袖','短袖','无袖','七分袖','五分袖','泡泡袖','喇叭袖','紧身袖');
+CREATE TYPE sil_enum    AS ENUM ('无','修身','宽松','直筒','A字型','H型','X型');
+CREATE TYPE len_enum    AS ENUM ('无','超短','短款','中长款','长款','及膝','及踝');
+CREATE TYPE mat_enum    AS ENUM ('无','棉质','丝质','麻质','毛料','化纤','混纺','牛仔','皮革');
+CREATE TYPE pat_enum    AS ENUM ('无','纯色','条纹','格子','印花','刺绣','蕾丝','网纱');
+CREATE TYPE craft_enum  AS ENUM ('无','拼接','褶皱','抽绳','拉链','纽扣','系带');
+CREATE TYPE occ_enum    AS ENUM ('无','休闲','正式','运动','居家','派对','职场','度假');
+CREATE TYPE sea_enum    AS ENUM ('无','春季','夏季','秋季','冬季','四季通用');
+CREATE TYPE styl_enum   AS ENUM ('无','简约','复古','甜美','帅气','优雅','个性','时尚');
+
+CREATE TABLE garment (
+    id          BIGSERIAL PRIMARY KEY, -- 主键：自增
+    filename    TEXT NOT NULL,  -- 文件名         5
+    storage_key TEXT NOT NULL, -- 文件存储URL 7 17
+    width       INT, 20
+    height      INT, 6
+    file_size   BIGINT,   4
+    uploaded_at TIMESTAMPTZ DEFAULT now(), 19
+
+    -- 13 个枚举列，必填
+    style      style_enum  NOT NULL,
+    color      color_enum  NOT NULL, 3
+    tone       tone_enum   NOT NULL,
+    collar     collar_enum NOT NULL,  2
+    sleeve     sleeve_enum NOT NULL, 15
+    silhouette sil_enum    NOT NULL, 13
+    length     len_enum    NOT NULL, 8
+    material   mat_enum    NOT NULL, 9
+    pattern    pat_enum    NOT NULL, 11
+    craft      craft_enum  NOT NULL,
+    occasion   occ_enum    NOT NULL, 10
+    season     sea_enum    NOT NULL, 12
+    style_tag  styl_enum   NOT NULL, 18
+
+    ai_confidence REAL, --AI置信度（0~1）  1
+    similarity_vector VECTOR(512) -- 512 维相似度向量（pgvector） 14
+);
+
+
+
+INSERT INTO garment (
+    filename,
+    storage_key,
+    width,
+    height,
+    file_size,
+    style,
+    color,
+    tone,
+    collar,
+    sleeve,
+    silhouette,
+    length,
+    material,
+    pattern,
+    craft,
+    occasion,
+    season,
+    style_tag,
+    ai_confidence,
+    similarity_vector
+) VALUES (
+    'demo.jpg',
+    'https://your-bucket.supabase.co/storage/v1/object/public/wardrobe/demo.jpg',
+    800,
+    600,
+    123456,
+    '无',   -- style_enum
+    '无',   -- color_enum
+    '无',   -- tone_enum
+    '无',   -- collar_enum
+    '无',   -- sleeve_enum
+    '无',   -- sil_enum
+    '无',   -- len_enum
+    '无',   -- mat_enum
+    '无',   -- pat_enum
+    '无',   -- craft_enum
+    '无',   -- occ_enum
+    '无',   -- sea_enum
+    '无',   -- styl_enum
+    0.0,    -- ai_confidence
+    (SELECT array_fill(0, ARRAY[512])::VECTOR)  -- 512 维零向量
+);
+
+

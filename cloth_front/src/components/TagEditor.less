@@ -1,0 +1,22 @@
+.tag-category {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.category-label {
+  min-width: 80px;
+  text-align: right;
+}
+
+@media (max-width: 768px) {
+  .tag-category {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .category-label {
+    text-align: left;
+  }
+}

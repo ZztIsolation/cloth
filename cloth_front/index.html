@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fashion Manager</title>
+  
+<script>
+  window.addEventListener('error', function(event) {
+    if (window.parent && window.parent.postMessage) {
+      window.parent.postMessage({
+        type: 'PREVIEW_UNCAUGHT_EXCEPTION',
+        message: event.message || 'Unknown error',
+        stack: event.error?.stack || '',
+        pathname: window.location.pathname,
+        search: window.location.search,
+        hash: window.location.hash,
+        port: window.location.port
+      }, '*');
+    }
+  });
+
+  window.addEventListener('unhandledrejection', function(event) {
+    if (window.parent && window.parent.postMessage) {
+      window.parent.postMessage({
+        type: 'PREVIEW_UNHANDLED_REJECTION',
+        message: event.reason?.message || 'Unhandled Promise Rejection',
+        stack: event.reason?.stack || '',
+        pathname: window.location.pathname,
+        search: window.location.search,
+        hash: window.location.hash,
+        port: window.location.port
+      }, '*');
+    }
+  });
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/index.jsx"></script>
+  </body>
+</html>
