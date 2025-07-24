@@ -108,18 +108,15 @@ const SearchPage = () => {
     }
     
     setLoading(true);
-    
     try {
-      const response = await fetch(`http://127.0.0.1:8000/images/search/tags`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ tags: activeTags }),
+      // 拼接GET参数
+      const params = new URLSearchParams(activeTags).toString();
+      const response = await fetch(`http://127.0.0.1:8000/search/by-tag?${params}`, {
+        method: 'GET',
         credentials: 'include'
       });
       const data = await response.json();
-      setSearchResults(Array.isArray(data) ? data : []);
+      setSearchResults(Array.isArray(data.results) ? data.results : []);
     } catch (error) {
       console.error('Tag search error:', error);
       // 使用模拟结果
@@ -154,16 +151,20 @@ const SearchPage = () => {
     setLoading(true);
     
     const formData = new FormData();
-    formData.append('image', file);
+    formData.append('file', file);
     
     try {
-      const response = await fetch('http://127.0.0.1:8000/images/search/image', {
+      const response = await fetch('http://127.0.0.1:8000/search/by-image', {
         method: 'POST',
         body: formData,
         credentials: 'include'
       });
       const data = await response.json();
-      setSearchResults(Array.isArray(data) ? data : []);
+      setSearchResults(
+        Array.isArray(data.results)
+          ? data.results
+          : (Array.isArray(data) ? data : [])
+      );
     } catch (error) {
       console.error('Image search error:', error);
       // 使用模拟结果
@@ -279,54 +280,57 @@ const SearchPage = () => {
           <>
             <Text style={{ marginBottom: 16, display: 'block' }}>
               找到 {searchResults.length} 个结果
-              {getActiveSearchTags().length > 0 && (
-                <span style={{ marginLeft: 16 }}>
-                  搜索条件：
-                  {getActiveSearchTags().map(([category, value]) => (
-                    <Tag key={category} style={{ marginLeft: 8 }}>
-                      {value}
-                    </Tag>
-                  ))}
-                </span>
-              )}
             </Text>
             <Row gutter={[16, 16]} className="search-results">
-              {searchResults.map((item) => (
-                <Col key={item.id} xs={24} sm={12} md={8} lg={6}>
-                  <Card
-                    hoverable
-                    className="result-card"
-                    cover={
-                      <div className="result-image-container">
-                        <Image
-                          alt="search result"
-                          src={item.image_url}
-                          preview={false}
-                          className="result-image"
-                        />
-                        {item.similarity && (
-                          <div className="similarity-badge">
-                            相似度: {(item.similarity * 100).toFixed(0)}%
-                          </div>
-                        )}
-                      </div>
-                    }
-                    actions={[
-                      <EyeOutlined 
-                        key="view" 
-                        onClick={() => navigate(`/detail/${item.id}`)} 
-                      />
-                    ]}
-                  >
-                    <Card.Meta
-                      title={`服装 #${item.id}`}
-                      description={
-                        <TagDisplay tags={item.tags} showEmpty={false} />
+              {searchResults.map((item) => {
+                // 动态拼接图片url（兼容后端未返回image_url的情况）
+                let imageUrl = item.image_url;
+                if (!imageUrl && item.storage_key) {
+                  // 你可以将supabase_url替换为你的实际Supabase URL
+                  const supabase_url = 'https://rfigsjdwdxigjsnlvtej.supabase.co';
+                  imageUrl = `${supabase_url}/storage/v1/object/public/zzt/${item.storage_key}`;
+                }
+                return (
+                  <Col key={item.id} xs={24} sm={12} md={8} lg={6}>
+                    <Card
+                      hoverable
+                      className="result-card"
+                      cover={
+                        <div className="result-image-container">
+                          <Image
+                            alt={`search result ${item.id}`}
+                            src={imageUrl}
+                            preview={false}
+                            className="result-image"
+                            style={{ width: '100%', height: 240, objectFit: 'cover', borderRadius: 8 }}
+                          />
+                          {item.similarity !== undefined && (
+                            <div className="similarity-badge">
+                              相似度: {(item.similarity * 100).toFixed(2)}%
+                            </div>
+                          )}
+                        </div>
                       }
-                    />
-                  </Card>
-                </Col>
-              ))}
+                      actions={[
+                        <EyeOutlined 
+                          key="view" 
+                          onClick={() => navigate(`/detail/${item.id}`)} 
+                        />
+                      ]}
+                    >
+                      <Card.Meta
+                        title={`服装 #${item.id}`}
+                        description={
+                          <>
+                            <div>文件名: {item.filename}</div>
+                            <div>相似度: {(item.similarity * 100).toFixed(2)}%</div>
+                          </>
+                        }
+                      />
+                    </Card>
+                  </Col>
+                );
+              })}
             </Row>
           </>
         ) : (searchQuery || getActiveSearchTags().length > 0 || uploadedImage) ? (

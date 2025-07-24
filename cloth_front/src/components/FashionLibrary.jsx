@@ -16,7 +16,8 @@ import {
   Divider,
   Input as TextArea,
   Form,
-  Select
+  Select,
+  Pagination
 } from 'antd';
 import { 
   UploadOutlined, 
@@ -25,7 +26,10 @@ import {
   LoadingOutlined,
   LinkOutlined,
   RobotOutlined,
-  SaveOutlined
+  SaveOutlined,
+  SearchOutlined,
+  AppstoreOutlined,
+  PlusOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import TagDisplay from './TagDisplay';
@@ -74,6 +78,36 @@ const FashionLibrary = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const [uploadMeta, setUploadMeta] = useState(null);
+  const PAGE_SIZE = 8;
+  const [currentPage, setCurrentPage] = useState(1);
+  const startIdx = (currentPage - 1) * PAGE_SIZE;
+  const endIdx = startIdx + PAGE_SIZE;
+  const pageItems = clothingItems.slice(startIdx, endIdx);
+  // IntersectionObserver 懒加载
+  const [visibleItems, setVisibleItems] = useState({});
+  const cardRefs = React.useRef({});
+  useEffect(() => {
+    const observer = new window.IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setVisibleItems((prev) => ({ ...prev, [entry.target.dataset.id]: true }));
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+    Object.values(cardRefs.current).forEach((ref) => {
+      if (ref) observer.observe(ref);
+    });
+    return () => observer.disconnect();
+  }, [pageItems]);
+  useEffect(() => {
+    const maxPage = Math.max(1, Math.ceil(clothingItems.length / PAGE_SIZE));
+    if (currentPage > maxPage) {
+      setCurrentPage(maxPage);
+    }
+  }, [clothingItems, currentPage]);
 
   useEffect(() => {
     fetchClothingItems();
@@ -295,61 +329,175 @@ const FashionLibrary = () => {
   };
 
   return (
-    <div className="fashion-library">
-      <div className="library-header">
-        <Title level={2}>服装库</Title>
-        <Upload {...uploadProps}>
-          <Button type="primary" icon={<UploadOutlined />}>
+    <div className="fashion-library-root">
+      {/* 顶部导航栏 */}
+      <div
+        className="fashion-navbar"
+        style={{
+          background: `rgba(255,255,255,0.8)`,
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          borderBottom: '1px solid #e0e0e0',
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 100,
+          height: 48,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '0 48px 0 24px',
+          fontFamily: 'SF Pro, PingFang SC, sans-serif',
+          transition: 'background 0.3s cubic-bezier(.4,0,.2,1)'
+        }}
+      >
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
+          <span
+            className="navbar-logo"
+            style={{
+              fontWeight: 800,
+              fontSize: 22,
+              color: '#111827',
+              letterSpacing: 1,
+              marginLeft: 0,
+              fontFamily: 'SF Pro, PingFang SC, Helvetica Neue, Arial, sans-serif',
+              WebkitFontSmoothing: 'antialiased',
+              MozOsxFontSmoothing: 'grayscale',
+            }}
+          >
+            Fashion Manager
+          </span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+          <Button
+            className="navbar-btn"
+            type="primary"
+            icon={<UploadOutlined />}
+            shape="round"
+            size="large"
+            style={{
+              background: '#007aff',
+              border: 'none',
+              color: '#fff',
+              fontWeight: 500,
+              fontSize: 14,
+              borderRadius: 32,
+              boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+              transition: 'transform 0.15s',
+              marginLeft: 0
+            }}
+            onClick={() => setUploadModalVisible(true)}
+          >
+            上传服装
+          </Button>
+        </div>
+      </div>
+      {/* 居中大号上传服装按钮 */}
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '0px 0 32px 0' }}>
+        <Upload
+          accept="image/*"
+          showUploadList={false}
+          beforeUpload={handleUpload}
+        >
+          <Button
+            type="primary"
+            icon={<UploadOutlined style={{ fontSize: 32, marginRight: 12 }} />}
+            size="large"
+            style={{
+              height: 64,
+              fontSize: 28,
+              padding: '0 48px',
+              borderRadius: 40,
+              background: '#007aff',
+              border: 'none',
+              color: '#fff',
+              fontWeight: 700,
+              boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+              display: 'flex',
+              alignItems: 'center',
+              transition: 'transform 0.15s',
+            }}
+          >
             上传服装
           </Button>
         </Upload>
       </div>
-
-      <Spin spinning={loading} indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}>
-        {clothingItems.length === 0 ? (
-          <Empty 
-            description="暂无服装，请上传您的第一件服装" 
-            className="empty-state"
-          />
-        ) : (
-          <Row gutter={[16, 16]} className="clothing-grid">
-            {clothingItems.map((item) => (
-              <Col key={item.id} xs={24} sm={12} md={8} lg={6}>
-                <Card
-                  hoverable
-                  className="clothing-card"
-                  cover={
-                    <div className="image-container">
-                      <Image
-                        alt="clothing"
-                        src={item.image_url}
-                        preview={false}
-                        className="clothing-image"
-                        onClick={() => {
-                          setPreviewImage(item);
-                          setPreviewModalVisible(true);
-                        }}
-                      />
+      {/* 服装库卡片区 */}
+      <div className="fashion-cards-bg">
+        <Spin spinning={loading} indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}>
+          {clothingItems.length === 0 ? (
+            <Empty
+              description="暂无服装，请上传您的第一件服装"
+              className="empty-state"
+            />
+          ) : (
+            <>
+              <Row gutter={[24, 32]} className="clothing-grid">
+                {pageItems.map((item, idx) => (
+                  <Col
+                    key={item.id}
+                    xs={24}
+                    sm={12}
+                    md={6}
+                    lg={6}
+                    style={{ display: 'flex', justifyContent: 'center' }}
+                  >
+                    <div
+                      className={`fashion-card glass-card${visibleItems[item.id] ? ' visible' : ''}`}
+                      ref={el => (cardRefs.current[item.id] = el)}
+                      data-id={item.id}
+                    >
+                      <div className="image-container" style={{ aspectRatio: '4/5', width: '100%', minHeight: 0, height: 320, overflow: 'hidden', borderRadius: 16, background: '#f5f5f7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Image
+                          alt="clothing"
+                          src={item.image_url}
+                          preview={false}
+                          className="clothing-image"
+                          style={{ objectFit: 'cover', width: '100%', height: '100%', borderRadius: 16 }}
+                          onClick={() => {
+                            setPreviewImage(item);
+                            setPreviewModalVisible(true);
+                          }}
+                        />
+                      </div>
+                      <div className="card-content">
+                        <div className="card-title" style={{ fontSize: 24, fontWeight: 700, fontFamily: 'Segoe UI, Microsoft YaHei, Arial, sans-serif', color: '#1d1d1f', marginBottom: 0 }}>
+                          服装 #{item.id}
+                        </div>
+                        <div style={{ marginTop: 8 }}>
+                          <TagDisplay tags={item.tags} showEmpty={false} />
+                        </div>
+                      </div>
+                      <div className="card-actions">
+                        <Button
+                          icon={<EyeOutlined />}
+                          onClick={() => navigate(`/detail/${item.id}`)}
+                          style={{ marginRight: 8 }}
+                        >查看</Button>
+                        <Button
+                          icon={<DeleteOutlined />}
+                          danger
+                          onClick={() => handleDelete(item.id)}
+                        >删除</Button>
+                      </div>
                     </div>
-                  }
-                  actions={[
-                    <EyeOutlined key="view" onClick={() => navigate(`/detail/${item.id}`)} />,
-                    <DeleteOutlined key="delete" onClick={() => handleDelete(item.id)} />
-                  ]}
-                >
-                  <Card.Meta
-                    title={`服装 #${item.id}`}
-                    description={
-                      <TagDisplay tags={item.tags} showEmpty={false} />
-                    }
-                  />
-                </Card>
-              </Col>
-            ))}
-          </Row>
-        )}
-      </Spin>
-
+                  </Col>
+                ))}
+              </Row>
+              <div style={{ display: 'flex', justifyContent: 'center', marginTop: 32 }}>
+                <Pagination
+                  current={currentPage}
+                  pageSize={PAGE_SIZE}
+                  total={clothingItems.length}
+                  onChange={page => setCurrentPage(page)}
+                  showSizeChanger={false}
+                />
+              </div>
+            </>
+          )}
+        </Spin>
+      </div>
       {/* 上传模态框 */}
       <Modal
         title="上传服装 - AI识别标签"
@@ -500,6 +648,10 @@ const FashionLibrary = () => {
           />
         )}
       </Modal>
+      {/* 页脚 */}
+      <footer className="fashion-footer">
+        <div className="footer-content">© 2024 Fashion Manager. All rights reserved.</div>
+      </footer>
     </div>
   );
 };

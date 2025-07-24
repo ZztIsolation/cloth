@@ -63,11 +63,6 @@ export const TAG_CATEGORIES = {
     name: '风格',
     options: ['简约', '复古', '甜美', '帅气', '优雅', '个性', '时尚'],
     enum: 'styl_enum'
-  },
-  ai_confidence: {
-    name: '置信度',
-    options: [],
-    enum: ''
   }
 };
 
