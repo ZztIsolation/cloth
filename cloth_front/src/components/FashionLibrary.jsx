@@ -330,6 +330,9 @@ const FashionLibrary = () => {
 
   return (
     <div className="fashion-library-root">
+      {/* 装饰性点元素 */}
+      <div className="decoration-dots"></div>
+      
       {/* 顶部导航栏 */}
       <div
         className="fashion-navbar"
@@ -393,8 +396,37 @@ const FashionLibrary = () => {
           </Button>
         </div>
       </div>
-      {/* 居中大号上传服装按钮 */}
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '0px 0 32px 0' }}>
+      {/* 装饰性标题区域 */}
+      <div style={{ 
+        textAlign: 'center', 
+        padding: '60px 0 40px', 
+        position: 'relative',
+        zIndex: 1
+      }}>
+        <div style={{
+          fontSize: '48px',
+          fontWeight: '800',
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+          marginBottom: '16px',
+          letterSpacing: '2px',
+          fontFamily: 'SF Pro, PingFang SC, Helvetica Neue, Arial, sans-serif'
+        }}>
+          我的时尚衣橱
+        </div>
+        <div style={{
+          fontSize: '18px',
+          color: '#6b7280',
+          fontWeight: '500',
+          marginBottom: '40px',
+          letterSpacing: '0.5px'
+        }}>
+          智能管理，精彩搭配
+        </div>
+        
+        {/* 居中大号上传服装按钮 */}
         <Upload
           accept="image/*"
           showUploadList={false}
@@ -409,28 +441,86 @@ const FashionLibrary = () => {
               fontSize: 28,
               padding: '0 48px',
               borderRadius: 40,
-              background: '#007aff',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
               border: 'none',
               color: '#fff',
               fontWeight: 700,
-              boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+              boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)',
               display: 'flex',
               alignItems: 'center',
-              transition: 'transform 0.15s',
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
             }}
           >
-            上传服装
+            上传新服装
           </Button>
         </Upload>
+        
+        {/* 装饰性浮动元素 */}
+        <div style={{
+          position: 'absolute',
+          top: '20px',
+          left: '10%',
+          width: '60px',
+          height: '60px',
+          background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+          borderRadius: '50%',
+          opacity: 0.1,
+          animation: 'float 6s ease-in-out infinite'
+        }} />
+        <div style={{
+          position: 'absolute',
+          top: '80px',
+          right: '15%',
+          width: '40px',
+          height: '40px',
+          background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+          borderRadius: '50%',
+          opacity: 0.1,
+          animation: 'float 8s ease-in-out infinite reverse'
+        }} />
       </div>
       {/* 服装库卡片区 */}
       <div className="fashion-cards-bg">
         <Spin spinning={loading} indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}>
           {clothingItems.length === 0 ? (
-            <Empty
-              description="暂无服装，请上传您的第一件服装"
-              className="empty-state"
-            />
+            <div className="empty-state" style={{ textAlign: 'center', padding: '80px 20px' }}>
+              <div style={{
+                fontSize: '120px',
+                marginBottom: '24px',
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text'
+              }}>👗</div>
+              <div style={{
+                fontSize: '24px',
+                fontWeight: '600',
+                color: '#374151',
+                marginBottom: '12px'
+              }}>您的衣橱还是空的</div>
+              <div style={{
+                fontSize: '16px',
+                color: '#6b7280',
+                marginBottom: '32px'
+              }}>上传您的第一件服装，开始打造专属时尚衣橱</div>
+              <Button
+                type="primary"
+                size="large"
+                icon={<PlusOutlined />}
+                onClick={() => setUploadModalVisible(true)}
+                style={{
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  border: 'none',
+                  borderRadius: '12px',
+                  padding: '0 32px',
+                  height: '48px',
+                  fontSize: '16px',
+                  fontWeight: '600'
+                }}
+              >
+                立即上传
+              </Button>
+            </div>
           ) : (
             <>
               <Row gutter={[24, 32]} className="clothing-grid">
@@ -462,8 +552,8 @@ const FashionLibrary = () => {
                         />
                       </div>
                       <div className="card-content">
-                        <div className="card-title" style={{ fontSize: 24, fontWeight: 700, fontFamily: 'Segoe UI, Microsoft YaHei, Arial, sans-serif', color: '#1d1d1f', marginBottom: 0 }}>
-                          服装 #{item.id}
+                        <div className="card-title" style={{ fontSize: 18, fontWeight: 700, fontFamily: 'SF Pro, PingFang SC, Helvetica Neue, Arial, sans-serif', color: '#1a1a1a', marginBottom: 12, letterSpacing: '0.5px', textAlign: 'center' }}>
+                          时尚单品 #{item.id}
                         </div>
                         <div style={{ marginTop: 8 }}>
                           <TagDisplay tags={item.tags} showEmpty={false} />
@@ -650,7 +740,6 @@ const FashionLibrary = () => {
       </Modal>
       {/* 页脚 */}
       <footer className="fashion-footer">
-        <div className="footer-content">© 2024 Fashion Manager. All rights reserved.</div>
       </footer>
     </div>
   );

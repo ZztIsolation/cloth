@@ -34,9 +34,10 @@ const App = () => {
       <Header className="app-header">
         <div className="header-content">
           <div className="logo-section">
-            <Title level={3} style={{ color: 'white', margin: 0 }}>
-              Fashion Manager
-            </Title>
+            <div className="brand-logo">
+              <span className="brand-text-light">Fashion</span>
+              <span className="brand-text-bold">Manager</span>
+            </div>
           </div>
           <Menu
             theme="dark"
@@ -59,7 +60,7 @@ const App = () => {
       </Content>
       
       <Footer className="app-footer">
-        Fashion Management System ©2024 Created with React & Ant Design
+        Fashion Management System ©2025 Created with React & Ant Design
       </Footer>
     </Layout>
   );

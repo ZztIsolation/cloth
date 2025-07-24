@@ -1,0 +1,89 @@
+.tag-selector {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid #f0f0f0;
+
+  .tag-category-section {
+    margin-bottom: 12px;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    .category-header {
+      margin-bottom: 8px;
+      
+      .category-title {
+        font-size: 14px;
+        color: #333;
+        font-weight: 600;
+      }
+    }
+
+    .tag-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      
+      .tag-option {
+        border: 1px solid #d9d9d9;
+        border-radius: 6px;
+        padding: 4px 12px;
+        font-size: 13px;
+        color: #666;
+        background: #fff;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        user-select: none;
+        
+        &:hover {
+          border-color: #1890ff;
+          color: #1890ff;
+        }
+        
+        &.selected {
+          background: #1890ff;
+          border-color: #1890ff;
+          color: #fff;
+          
+          &:hover {
+            background: #40a9ff;
+            border-color: #40a9ff;
+          }
+        }
+        
+        &.disabled {
+          cursor: not-allowed;
+          opacity: 0.5;
+          
+          &:hover {
+            border-color: #d9d9d9;
+            color: #666;
+          }
+        }
+      }
+    }
+  }
+}
+
+// 响应式设计
+@media (max-width: 768px) {
+  .tag-selector {
+    padding: 12px;
+    
+    .tag-category-section {
+      margin-bottom: 10px;
+      
+      .tag-options {
+        gap: 6px;
+        
+        .tag-option {
+          font-size: 12px;
+          padding: 3px 8px;
+        }
+      }
+    }
+  }
+}

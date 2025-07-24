@@ -103,7 +103,7 @@ const ImageDetail = () => {
 
   return (
     <div style={{ maxWidth: 900, margin: '0 auto', padding: 24 }}>
-      <Button onClick={() => navigate('/library')} style={{ marginBottom: 24 }}>返回服装库</Button>
+      <Button onClick={() => navigate(-1)} style={{ marginBottom: 24 }}>返回上一页</Button>
       <Row gutter={32}>
         <Col xs={24} md={12}>
           <Image src={clothing.image_url} alt={clothing.filename} style={{ width: '100%', borderRadius: 8 }} />
