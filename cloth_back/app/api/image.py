@@ -56,7 +56,17 @@ async def ai_image_chat(req: ImageUrlRequest):
         result = qwen_image_chat(image_url)
         tags = parse_ai_result(result)
         _temp_data['ai_result'] = result
-        return {"result": result, "tags": tags}
+        
+        # 如果之前上传过图片，返回向量数据
+        vector_data = None
+        if 'upload' in _temp_data and _temp_data['upload'].get('similarity_vector'):
+            vector_data = _temp_data['upload']['similarity_vector']
+        
+        return {
+            "result": result, 
+            "tags": tags,
+            "similarity_vector": vector_data
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

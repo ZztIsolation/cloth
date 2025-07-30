@@ -21,6 +21,7 @@ import {
 import TagEditor from './TagEditor';
 import TagDisplay from './TagDisplay';
 import { getAllTagCategories } from '../utils/tagConfig';
+import { useSearchContext } from '../contexts/SearchContext';
 import './ImageDetail.less';
 
 const { Title, Text } = Typography;
@@ -33,6 +34,7 @@ const ALL_TAG_KEYS = [
 const ImageDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { searchState } = useSearchContext();
   const [clothing, setClothing] = useState(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
@@ -103,7 +105,19 @@ const ImageDetail = () => {
 
   return (
     <div style={{ maxWidth: 900, margin: '0 auto', padding: 24 }}>
-      <Button onClick={() => navigate(-1)} style={{ marginBottom: 24 }}>返回上一页</Button>
+      <Button 
+        onClick={() => {
+          // 如果有搜索状态，返回搜索页面；否则返回上一页
+          if (searchState.hasSearched) {
+            navigate('/search');
+          } else {
+            navigate(-1);
+          }
+        }} 
+        style={{ marginBottom: 24 }}
+      >
+        {searchState.hasSearched ? '返回搜索结果' : '返回上一页'}
+      </Button>
       <Row gutter={32}>
         <Col xs={24} md={12}>
           <Image src={clothing.image_url} alt={clothing.filename} style={{ width: '100%', borderRadius: 8 }} />

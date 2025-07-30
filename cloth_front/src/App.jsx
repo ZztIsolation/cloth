@@ -5,6 +5,7 @@ import { HomeOutlined, SearchOutlined, UploadOutlined, DatabaseOutlined } from '
 import FashionLibrary from './components/FashionLibrary';
 import ImageDetail from './components/ImageDetail';
 import SearchPage from './components/SearchPage';
+import { SearchProvider } from './contexts/SearchContext';
 import './App.less';
 
 const { Header, Content, Footer } = Layout;
@@ -30,39 +31,41 @@ const App = () => {
   ];
 
   return (
-    <Layout className="app-layout">
-      <Header className="app-header">
-        <div className="header-content">
-          <div className="logo-section">
-            <div className="brand-logo">
-              <span className="brand-text-light">Fashion</span>
-              <span className="brand-text-bold">Manager</span>
+    <SearchProvider>
+      <Layout className="app-layout">
+        <Header className="app-header">
+          <div className="header-content">
+            <div className="logo-section">
+              <div className="brand-logo">
+                <span className="brand-text-light">Fashion</span>
+                <span className="brand-text-bold">Manager</span>
+              </div>
             </div>
+            <Menu
+              theme="dark"
+              mode="horizontal"
+              selectedKeys={[selectedKey]}
+              items={menuItems}
+              className="main-menu"
+              onClick={({ key }) => setSelectedKey(key)}
+            />
           </div>
-          <Menu
-            theme="dark"
-            mode="horizontal"
-            selectedKeys={[selectedKey]}
-            items={menuItems}
-            className="main-menu"
-            onClick={({ key }) => setSelectedKey(key)}
-          />
-        </div>
-      </Header>
-      
-      <Content className="app-content">
-        <Routes>
-          <Route path="/" element={<Navigate to="/library" replace />} />
-          <Route path="/library" element={<FashionLibrary />} />
-          <Route path="/detail/:id" element={<ImageDetail />} />
-          <Route path="/search" element={<SearchPage />} />
-        </Routes>
-      </Content>
-      
-      <Footer className="app-footer">
-        Fashion Management System ©2025 Created with React & Ant Design
-      </Footer>
-    </Layout>
+        </Header>
+        
+        <Content className="app-content">
+          <Routes>
+            <Route path="/" element={<Navigate to="/library" replace />} />
+            <Route path="/library" element={<FashionLibrary />} />
+            <Route path="/detail/:id" element={<ImageDetail />} />
+            <Route path="/search" element={<SearchPage />} />
+          </Routes>
+        </Content>
+        
+        <Footer className="app-footer">
+          Fashion Management System ©2025 Created with React & Ant Design
+        </Footer>
+      </Layout>
+    </SearchProvider>
   );
 };
 

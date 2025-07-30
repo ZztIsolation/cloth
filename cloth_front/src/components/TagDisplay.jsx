@@ -43,8 +43,9 @@ const TagDisplay = ({ tags, showEmpty = false, horizontal = false }) => {
       </>
     );
   }
+  
   return (
-    <Space direction="vertical" size="small" style={{ width: '100%' }}>
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', width: '100%' }}>
       {displayTags.map(({ category, value, label, color }) => (
         <Space key={category} size="small">
           <Text strong style={{ fontSize: 12 }}>{label}:</Text>
@@ -56,7 +57,7 @@ const TagDisplay = ({ tags, showEmpty = false, horizontal = false }) => {
       {displayTags.length === 0 && showEmpty && (
         <Text type="secondary" style={{ fontSize: 12 }}>暂无标签信息</Text>
       )}
-    </Space>
+    </div>
   );
 };
 
