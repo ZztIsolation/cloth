@@ -12,6 +12,7 @@ CREATE TYPE occ_enum    AS ENUM ('无','休闲','正式','运动','居家','派�
 CREATE TYPE sea_enum    AS ENUM ('无','春季','夏季','秋季','冬季','四季通用');
 CREATE TYPE styl_enum   AS ENUM ('无','简约','复古','甜美','帅气','优雅','个性','时尚');
 
+
 CREATE TABLE garment (
     id          BIGSERIAL PRIMARY KEY, -- 主键：自增
     filename    TEXT NOT NULL,  -- 文件名         5
