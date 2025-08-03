@@ -4,4 +4,9 @@ pillow
 python-multipart
 supabase
 httpx
-python-dotenv 
+python-dotenv
+# 新增以下依赖
+torch
+clip-by-openai
+numpy
+scikit-learn
